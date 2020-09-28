@@ -153,7 +153,9 @@ func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
 	req := c.Request()
 	res := c.Response()
 	start := time.Now()
-	if err := next(c); err != nil {
+
+	var err error
+	if err = next(c); err != nil {
 		c.Error(err)
 	}
 	stop := time.Now()
@@ -162,7 +164,7 @@ func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
 
 	bytesIn := req.Header.Get(echo.HeaderContentLength)
 
-	Logger.WithFields(map[string]interface{}{
+	fields := (map[string]interface{}{
 		"time_rfc3339":  time.Now().Format(time.RFC3339),
 		"remote_ip":     c.RealIP(),
 		"host":          req.Host,
@@ -176,7 +178,13 @@ func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
 		"latency_human": stop.Sub(start).String(),
 		"bytes_in":      bytesIn,
 		"bytes_out":     strconv.FormatInt(res.Size, 10),
-	}).Info("Handled request")
+	})
+
+	if err != nil {
+		fields["error"] = err.Error()
+	}
+
+	Logger.WithFields(fields).Info("Handled request")
 
 	return nil
 }
