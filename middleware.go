@@ -191,3 +191,8 @@ func logger(next echo.HandlerFunc) echo.HandlerFunc {
 func Hook() echo.MiddlewareFunc {
 	return logger
 }
+
+// Middleware returns the logrus middleware.
+func Middleware() echo.MiddlewareFunc {
+	return logger
+}

@@ -1,4 +1,4 @@
-module github.com/cemkiy/echo-logrus
+module github.com/davrux/echo-logrus/v4
 
 go 1.13
 
